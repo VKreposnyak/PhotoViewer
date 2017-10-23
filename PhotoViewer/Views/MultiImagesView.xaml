@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="PhotoViewer.Views.MultiImagesView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:mvvm="clr-namespace:PhotoViewer.Mvvm"
+        xmlns:controls="clr-namespace:PhotoViewer.Controls">
+    <Grid>
+        <ListBox ItemsSource="{Binding ImageCollection, IsAsync=True}" AllowDrop="True" 
+                 SelectionMode="Single" SelectedIndex="{Binding SelectedIndex}" 
+                 ScrollViewer.VerticalScrollBarVisibility="Visible" 
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <i:Interaction.Behaviors>
+                <mvvm:EventToCommandBehavior Event="Drop" Command="{Binding Path=DropImagesCommand}" PassArguments="True">
+                </mvvm:EventToCommandBehavior>
+            </i:Interaction.Behaviors>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <!--Virtualizing WrapPanel improves performance when binding a ListBox to a large amount of data-->
+                    <controls:VirtualizingWrapPanel/>  
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Image Margin="5" Height="100" Width="100" Stretch="Uniform">
+                        <Image.Source>
+                            <!--image thumbnail 100 pixel-->
+                            <BitmapImage DecodePixelWidth="100" 
+                                         CacheOption="OnDemand" 
+                                         CreateOptions="DelayCreation"
+                                         UriSource="{Binding Path=Path}"> 
+                            </BitmapImage>
+                        </Image.Source>
+                        <Image.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Path=DataContext.ImageDoubleClickCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" />
+                        </Image.InputBindings>
+                    </Image>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>
